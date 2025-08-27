@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>REKAPITULASI HUNIAN RUSUNAWA BJM</title>
+  <style>
+    :root{
+      --bg:#f9fafb;
+      --card-bg:#fff;
+      --border:#e5e7eb;
+      --text:#111827;
+      --muted:#6b7280;
+      --primary:#2563eb;
+      font-family:'Inter',system-ui,sans-serif;
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font-size:14px;}
+    .container{max-width:1000px;margin:0 auto;padding:20px;}
+    .card{background:var(--card-bg);border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.05);padding:20px;}
+    h1{font-size:20px;font-weight:600;margin:0 0 16px;text-align:center;line-height:1.3;}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px;}
+    input[type=search]{flex:1;padding:10px 14px;border-radius:12px;border:1px solid var(--border);font-size:14px;}
+    button{padding:10px 16px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:.2s;}
+    button:hover{background:#1d4ed8;}
+    table{width:100%;border-collapse:collapse;font-size:14px;overflow:hidden;border-radius:12px;}
+    thead{background:var(--primary);color:#fff;}
+    th,td{padding:12px 10px;text-align:left;}
+    tbody tr:nth-child(even){background:#f3f4f6;}
+    tbody tr:hover{background:#e5e7eb;}
+    td::before{display:none;}
+    .muted{font-size:13px;color:var(--muted);text-align:right;flex:1;margin-top:8px;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>REKAPITULASI HUNIAN RUSUNAWA BJM</h1>
+      <div id="tableWrap"></div>
+      <div class="muted">*update tanggal 28 Agustus 2025 <code></code></div>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      {no:1, nama:"Rusunawa Ganda Maghfirah", blok:"A", lantai:1, jumlah_unit:24, terisi:20, siap_huni:4, rusak:0},
+      {no:"", nama:"", blok:"A", lantai:2, jumlah_unit:24, terisi:14, siap_huni:9, rusak:0},
+      {no:"", nama:"", blok:"A", lantai:3, jumlah_unit:24, terisi:12, siap_huni:10, rusak:1},
+      {no:"", nama:"", blok:"A", lantai:4, jumlah_unit:24, terisi:6, siap_huni:9, rusak:8},
+      {no:2, nama:"Rusunawa Ganda Maghfirah", blok:"B", lantai:1, jumlah_unit:23, terisi:25, siap_huni:0, rusak:1},
+      {no:"", nama:"", blok:"B", lantai:2, jumlah_unit:24, terisi:17, siap_huni:2, rusak:5},
+      {no:"", nama:"", blok:"B", lantai:3, jumlah_unit:24, terisi:18, siap_huni:6, rusak:0},
+      {no:"", nama:"", blok:"B", lantai:4, jumlah_unit:24, terisi:14, siap_huni:8, rusak:1},
+      {no:3, nama:"Rusunawa Ganda Maghfirah", blok:"C", lantai:"Dasar", jumlah_unit:3, terisi:1, siap_huni:1, rusak:1},
+      {no:"", nama:"", blok:"C", lantai:1, jumlah_unit:24, terisi:20, siap_huni:2, rusak:2},
+      {no:"", nama:"", blok:"C", lantai:2, jumlah_unit:24, terisi:21, siap_huni:1, rusak:2},
+      {no:"", nama:"", blok:"C", lantai:3, jumlah_unit:24, terisi:18, siap_huni:0, rusak:5},
+      {no:"", nama:"", blok:"C", lantai:4, jumlah_unit:24, terisi:17, siap_huni:5, rusak:2},
+      {no:4, nama:"Rusunawa Teluk Kelayan", blok:"", lantai:1, jumlah_unit:10, terisi:6, siap_huni:3, rusak:0},
+      {no:"", nama:"", blok:"", lantai:2, jumlah_unit:16, terisi:15, siap_huni:0, rusak:1},
+      {no:"", nama:"", blok:"", lantai:3, jumlah_unit:16, terisi:14, siap_huni:1, rusak:1},
+      {no:"", nama:"", blok:"", lantai:4, jumlah_unit:16, terisi:8, siap_huni:4, rusak:3}
+    ];
+
+    const headers = [
+      {key:'no', label:'NO.'},
+      {key:'nama', label:'NAMA / LOKASI RUSUNAWA'},
+      {key:'blok', label:'BLOK'},
+      {key:'lantai', label:'LANTAI'},
+      {key:'jumlah_unit', label:'JUMLAH UNIT'},
+      {key:'terisi', label:'KONDISI TERISI'},
+      {key:'percent', label:'% TERISI'},
+      {key:'siap_huni', label:'SIAP HUNI'},
+      {key:'percent_siap', label:'% SIAP HUNI'},
+      {key:'rusak', label:'RUSAK'},
+      {key:'percent_rusak', label:'% RUSAK'}
+    ];
+
+    const tableWrap = document.getElementById('tableWrap');
+
+    function renderTable(list){
+      if(!list) list = data;
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      const trh = document.createElement('tr');
+      headers.forEach(h=>{ const th = document.createElement('th'); th.textContent = h.label; trh.appendChild(th); });
+      thead.appendChild(trh);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      list.forEach(row=>{
+        const tr = document.createElement('tr');
+        headers.forEach(h=>{
+          const td = document.createElement('td');
+          let value = row[h.key];
+          if(h.key==='percent'){
+            const pct = row.jumlah_unit ? Math.round((row.terisi/row.jumlah_unit)*100) : 0;
+            value = pct + '%';
+          }
+          if(h.key==='percent_siap'){
+            const pct = row.jumlah_unit ? Math.round((row.siap_huni/row.jumlah_unit)*100) : 0;
+            value = pct + '%';
+          }
+          if(h.key==='percent_rusak'){
+            const pct = row.jumlah_unit ? Math.round((row.rusak/row.jumlah_unit)*100) : 0;
+            value = pct + '%';
+          }
+          td.setAttribute('data-label', h.label);
+          td.textContent = (value === undefined || value === null) ? '' : value;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      tableWrap.innerHTML = '';
+      tableWrap.appendChild(table);
+    }
+
+    renderTable(data);
+  </script>
+</body>
+</html>
